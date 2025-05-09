@@ -1,9 +1,11 @@
 <script lang="ts">
 	import 'leaflet/dist/leaflet.css';
+	import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 	import '../app.css';
+	import L from 'leaflet';
+	import 'leaflet-routing-machine';
 
 	import { onMount } from 'svelte';
-	import L from 'leaflet';
 
 	let mapDiv: HTMLDivElement;
 	let lat = $state(0);
@@ -18,7 +20,7 @@
 
 		L.marker([52.43162959873308, 4.911296367645265])
 			.addTo(map)
-			.bindPopup('Begin route')
+			.bindPopup('1. Begin route')
 			.openPopup();
 
 		map.on('click', (e: L.LeafletMouseEvent) => {
@@ -26,6 +28,15 @@
 			lng = e.latlng.lng;
 			console.log(`Clicked at: ${lat}, ${lng}`);
 		});
+
+		L.Routing.control({
+			waypoints: [
+				L.Routing.waypoint(L.latLng(52.43162959873308, 4.911296367645265), 'Start Point'),
+				L.Routing.waypoint(L.latLng(52.453028039046714, 4.908056259155273), 'End Point'),
+				L.Routing.waypoint(L.latLng(52.42101154027451, 4.907938241958619), 'End Point')
+			],
+			routeWhileDragging: true
+		}).addTo(map);
 	});
 </script>
 
