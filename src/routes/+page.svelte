@@ -8,8 +8,24 @@
 	import { onMount } from 'svelte';
 
 	let mapDiv: HTMLDivElement;
-	
+	let control: L.Routing.Control;
+
 	let waypointNumber = 8;
+
+	const remove = () => {
+		const waypoints = control.getWaypoints();
+
+		// Only remove if there's more than 2 (start + end)
+		if (waypoints.length > 2) {
+			control.spliceWaypoints(waypoints.length - 1, 1);
+		}
+	};
+
+	const show = () => {
+		const waypoints = control.getWaypoints();
+
+		console.log(waypoints);
+	};
 
 	onMount(() => {
 		const map = L.map(mapDiv).setView([52.43162959873308, 4.911296367645265], 12);
@@ -18,13 +34,7 @@
 			attribution: '&copy; OpenStreetMap contributors'
 		}).addTo(map);
 
-		// L.marker([52.43162959873308, 4.911296367645265])
-		// 	.addTo(map)
-		// 	.bindPopup('1. Begin route')
-		// 	.openPopup();
-
-		
-		const control = L.Routing.control({
+		control = L.Routing.control({
 			waypointMode: 'snap',
 			waypoints: [
 				L.Routing.waypoint(L.latLng(52.43162959873308, 4.911296367645265), '1'),
@@ -33,11 +43,11 @@
 				L.Routing.waypoint(L.latLng(52.425087659372686, 4.911317825317384), '4'),
 
 				L.Routing.waypoint(L.latLng(52.42958207610243, 4.913308024406434), ''),
-				
+
 				L.Routing.waypoint(L.latLng(52.42931713411541, 4.912932515144349), '5'),
-				L.Routing.waypoint(L.latLng(52.428420898798656, 4.910067915916444), '6'),
+				L.Routing.waypoint(L.latLng(52.428420898798656, 4.910067915916444), '6')
 			],
-		
+
 			createMarker: function (i, wp, n) {
 				return L.marker(wp.latLng, {
 					icon: L.divIcon({
@@ -47,15 +57,12 @@
 					})
 				});
 			},
-			// routeWhileDragging: false, // Prevent the route from being updated while dragging
-			// autoRoute: true,
-			// collapsible: false,
-			// fitSelectedRoutes: false,
-			// showAlternatives: false,
-			lineOptions: {styles: [{color: '#242c81', weight: 3}] , extendToWaypoints: false , missingRouteTolerance: 0 , addWaypoints: false},
-		
-			
-
+			lineOptions: {
+				styles: [{ color: '#242c81', weight: 3 }],
+				extendToWaypoints: false,
+				missingRouteTolerance: 0,
+				addWaypoints: false
+			}
 		});
 		control.addTo(map);
 
@@ -64,16 +71,40 @@
 			let lng = e.latlng.lng;
 			let waypoint = L.Routing.waypoint(L.latLng(lat, lng), `${waypointNumber}`);
 			control.spliceWaypoints(control.getWaypoints().length, 0, waypoint);
-			waypointNumber += 1
+			waypointNumber += 1;
 		});
-
 	});
 </script>
 
-<div bind:this={mapDiv}></div>
+<div class="wrapper">
+	<div class="nav">
+		<button onclick={remove}>-</button>
+		<button onclick={show}>Show</button>
+	</div>
+
+	<div class="map" bind:this={mapDiv}></div>
+</div>
 
 <style>
-	div {
+	.wrapper {
+		position: relative;
+	}
+
+	.nav {
+		position: absolute;
+		bottom: 10px;
+		left: 10px;
+		z-index: 1000;
+		
+		font-size: 2rem;
+	}
+
+	button {
+		font-size: 2rem;
+		padding: 10px 20px;
+	}
+
+	.map {
 		height: 100vh;
 		width: 100%;
 		margin: 0;
