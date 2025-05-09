@@ -11,6 +11,7 @@
 	let control: L.Routing.Control;
 
 	let waypointNumber = 8;
+	let gpsMarker: L.Marker | null = null;
 
 	const remove = () => {
 		const waypoints = control.getWaypoints();
@@ -69,6 +70,43 @@
 		});
 		control.addTo(map);
 
+		if ('geolocation' in navigator) {
+			navigator.geolocation.watchPosition(
+				(position) => {
+					const lat = position.coords.latitude;
+					const lng = position.coords.longitude;
+					const latlng = L.latLng(lat, lng);
+
+					if (!gpsMarker) {
+						// Create the marker on first update
+						gpsMarker = L.marker(latlng, {
+							icon: L.icon({
+								iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png', // Or use your own icon
+								iconSize: [25, 25],
+								iconAnchor: [12, 12]
+							})
+						}).addTo(map);
+					} else {
+						// Update marker position
+						gpsMarker.setLatLng(latlng);
+					}
+
+					// Optional: keep map centered on user
+					// map.setView(latlng);
+				},
+				(error) => {
+					console.error('Geolocation error:', error);
+				},
+				{
+					enableHighAccuracy: true,
+					maximumAge: 1000,
+					timeout: 5000
+				}
+			);
+		} else {
+			console.warn('Geolocation not supported in this browser.');
+		}
+
 		map.on('click', (e: L.LeafletMouseEvent) => {
 			let lat = e.latlng.lat;
 			let lng = e.latlng.lng;
@@ -84,8 +122,6 @@
 			console.log('Route found:', route);
 			console.log('Coordinates:', coordinates);
 		});
-
-		
 	});
 </script>
 
