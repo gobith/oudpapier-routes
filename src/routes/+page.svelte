@@ -25,6 +25,9 @@
 		const waypoints = control.getWaypoints();
 
 		console.log(waypoints);
+
+		const route = control.routes[0]; // Take the first (and usually only) route
+		const coordinates = route.coordinates; // This is an array of LatLng objects
 	};
 
 	onMount(() => {
@@ -73,6 +76,16 @@
 			control.spliceWaypoints(control.getWaypoints().length, 0, waypoint);
 			waypointNumber += 1;
 		});
+
+		control.on('routesfound', function (e) {
+			const route = e.routes[0]; // First route
+			const coordinates = route.coordinates; // Array of LatLng objects
+
+			console.log('Route found:', route);
+			console.log('Coordinates:', coordinates);
+		});
+
+		
 	});
 </script>
 
