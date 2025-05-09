@@ -79,7 +79,7 @@
 <div class="wrapper">
 	<div class="nav">
 		<button onclick={remove}>-</button>
-		<button onclick={show}>Show</button>
+		<button onclick={show}>s</button>
 	</div>
 
 	<div class="map" bind:this={mapDiv}></div>
@@ -92,11 +92,16 @@
 
 	.nav {
 		position: absolute;
-		bottom: 10px;
-		left: 10px;
-		z-index: 1000;
-		
-		font-size: 2rem;
+		top: 10px;
+
+		left: 50%;
+		transform: translateX(-50%);
+		z-index: 100000;
+
+		font-size: 1rem;
+		/* display: flex;
+		flex-direction: column;
+		gap: 10px; */
 	}
 
 	button {
